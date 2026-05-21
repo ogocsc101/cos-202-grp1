@@ -1,15 +1,19 @@
 "use client"
 
 import React, { useState } from 'react';
-import Link from "next/link";
 import SideBar from "@/components/SideBar";
+import CreateTaskModal from "@/components/CreateTaskModal";
 
-interface Task {
-    id: number;
-    title: string;
-    completed: boolean;
-    dueDate: string;
-}
+type Priority = "low" | "medium" | "urgent" | "";
+
+type Task = {
+id: number;
+title: string;
+description: string;
+priority: Priority;
+dueDate: string;
+completed: boolean;
+};
 
 const topBar: React.CSSProperties = {
   height: "88px",
@@ -78,84 +82,185 @@ const dashboardContent: React.CSSProperties = {
   padding: "32px",
 };
 
+const createTaskButton: React.CSSProperties = {
+  position: "fixed",
+  bottom: "28px",
+  left: "50%",
+  transform: "translateX(-50%)",
+  width: "64px",
+  height: "64px",
+  borderRadius: "50%",
+  border: "none",
+  background: "#2f80d7",
+  color: "#ffffff",
+  fontSize: "34px",
+  fontWeight: 500,
+  cursor: "pointer",
+  boxShadow: "0 14px 30px rgba(47, 128, 215, 0.35)",
+};
+
+const taskList: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "14px",
+  maxWidth: "900px",
+};
+
+const taskCard: React.CSSProperties = {
+  background: "#eaf4ff",
+  borderRadius: "12px",
+  padding: "16px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+};
+
+const taskTitle: React.CSSProperties = {
+  margin: 0,
+  fontSize: "16px",
+  fontWeight: 700,
+  color: "#1f2a44",
+};
+
+const taskDescription: React.CSSProperties = {
+  margin: "6px 0 0",
+  fontSize: "14px",
+  color: "#64748b",
+};
+
+const taskDueDate: React.CSSProperties = {
+  margin: "6px 0 0",
+  fontSize: "14px",
+  color: "#111827",
+};
+
+const taskActionButton: React.CSSProperties = {
+  border: "none",
+  background: "transparent",
+  color: "#2f80d7",
+  fontWeight: 700,
+  cursor: "pointer",
+};
+
+const priorityBadge = (priority: Priority): React.CSSProperties => ({
+  display: "inline-block",
+  marginTop: "8px",
+  padding: "4px 9px",
+  borderRadius: "999px",
+  fontSize: "12px",
+  fontWeight: 700,
+  textTransform: "capitalize",
+  background:
+    priority === "urgent"
+      ? "#ffe1e1"
+      : priority === "medium"
+      ? "#fff1c7"
+      : "#dff7e8",
+  color:
+    priority === "urgent"
+      ? "#c92a2a"
+      : priority === "medium"
+      ? "#9a6700"
+      : "#1f7a43",
+});
+
 export default function Home() {
     const [tasks, setTasks] = useState<Task[]>([
-        { id: 1, title: 'Complete homework', completed: false, dueDate: '2023-10-01' },
-        { id: 2, title: 'Study for exam', completed: true, dueDate: '2023-10-02' },
+      {
+        id: 1,
+        title: "Complete homework",
+        description: "",
+        priority: "medium",
+        dueDate: "2023-10-01",
+        completed: false,
+      },
     ]);
-    const [newTask, setNewTask] = useState('');
+    
+    const [showModal, setShowModal] = useState(false);
 
-    const addTask = () => {
-        if (newTask.trim()) {
-            const task: Task = {
-                id: Date.now(),
-                title: newTask,
-                completed: false,
-                dueDate: new Date().toISOString().split('T')[0],
-            };
-            setTasks([...tasks, task]);
-            setNewTask('');
-        }
-    };
-
-    const toggleComplete = (id: number) => {
-        setTasks(tasks.map(task => task.id === id ? { ...task, completed: !task.completed } : task));
+    const toggleTaskStatus = (taskId: number) => {
+      setTasks(
+        tasks.map((task) =>
+          task.id === taskId ? { ...task, completed: !task.completed } : task
+        )
+      );
     };
 
     return (
-        <div style={appLayout}>
-              <div className="flex flex-1">
-                <SideBar />
+    <div style={appLayout}>
+        <SideBar />
 
-                {/* Main Content */}
-                <main style={mainArea}>
-                    <header style={topBar}>
-                        <div>
-                            <p style={greeting}>Good morning, Scholar</p>
-                            <h1 style={pageTitle}>Dashboard</h1>
-                        </div>
+        <main style={mainArea}>
+        <header style={topBar}>
+            <div>
+            <p style={greeting}>Welcome Aboard</p>
+            <h1 style={pageTitle}> [Student_Name] </h1>
+            </div>
 
-                        <div style={topBarActions}>
-                            <button style={iconButton} aria-label="Notifications">
-                            🔔
-                            </button>
+            <div style={topBarActions}>
+            <button style={iconButton} aria-label="Notifications">
+                🔔
+            </button>
 
-                            <div style={topAvatar}>N</div>
-                        </div>
-                    </header>
+            <div style={topAvatar}>N</div>
+            </div>
+        </header>
 
-                    <section style={dashboardContent}>
-                        <h1 className="text-3xl font-bold mb-10 text-[#2F80D1]">Student Task Manager</h1>
-                
-                        {/* Add New Task */}
-                        <div style={{ marginBottom: '20px' }}>
-                            <input
-                                type="text"
-                                value={newTask}
-                                onChange={(e) => setNewTask(e.target.value)}
-                                placeholder="Add new task"
-                                style={{ padding: '10px', width: '300px', color: "#A7ADB5" }}
-                            />
-                            <button onClick={addTask} style={{ padding: '10px', marginLeft: '10px' }}>Add Task</button>
-                        </div>
+        <section style={dashboardContent}>
+            <h1 className="text-3xl font-bold mb-10 text-[#2F80D1]">
+            Dashboard
+            </h1>
 
-                        {/* Task Cards */}
-                        <div>
-                            {tasks.map(task => (
-                                <div key={task.id} style={{ border: 'none', backgroundColor: "#E8F0FA" , padding: '10px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between' }}>
-                                    <div>
-                                        <h3 style={{ textDecoration: task.completed ? 'line-through' : 'none', color: "#2A3342" }}>{task.title}</h3>
-                                        <p>Due: {task.dueDate}</p>
-                                    </div>
-                                    <button onClick={() => toggleComplete(task.id)} style={{color: "#2F80D1"}}>
-                                        {task.completed ? 'Mark Incomplete' : 'Mark Complete'}
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-                </main>
-              </div>
-           </div>
+            <div style={taskList}>
+            {tasks.map((task) => (
+                <div key={task.id} style={taskCard}>
+                <div>
+                    <p
+                    style={{
+                        ...taskTitle,
+                        textDecoration: task.completed ? "line-through" : "none",
+                    }}
+                    >
+                    {task.title}
+                    </p>
+
+                    {task.description && (
+                    <p style={taskDescription}>{task.description}</p>
+                    )}
+
+                    {task.dueDate && (
+                    <p style={taskDueDate}>Due: {task.dueDate}</p>
+                    )}
+
+                    {task.priority && (
+                    <span style={priorityBadge(task.priority)}>
+                        {task.priority}
+                    </span>
+                    )}
+                </div>
+
+                <button
+                    style={taskActionButton}
+                    onClick={() => toggleTaskStatus(task.id)}
+                >
+                    {task.completed ? "Mark Incomplete" : "Mark Complete"}
+                </button>
+                </div>
+            ))}
+            </div>
+
+            <button style={createTaskButton} onClick={() => setShowModal(true)}>
+            +
+            </button>
+
+            {showModal && (
+            <CreateTaskModal
+                onClose={() => setShowModal(false)}
+                onCreateTask={(task: Task) => setTasks([task, ...tasks])}
+            />
+            )}
+        </section>
+        </main>
+    </div>
     );
 };

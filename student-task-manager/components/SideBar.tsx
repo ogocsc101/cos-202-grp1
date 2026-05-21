@@ -114,7 +114,7 @@ export default function Sidebar() {
     <aside style={sidebarStyle}>
       <div style={sidebarLogo}>
         <span style={logoMark}>S</span>
-        <span>Student Task</span>
+        <span>Task Manager</span>
       </div>
 
     <nav style={sidebarNav}>
