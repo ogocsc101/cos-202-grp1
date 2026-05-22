@@ -1,18 +1,20 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SideBar from "@/components/SideBar";
 import CreateTaskModal from "@/components/CreateTaskModal";
 
-type Priority = "low" | "medium" | "urgent" | "";
+type Priority = "LOW" | "MEDIUM" | "URGENT" | "";
 
 type Task = {
-id: number;
-title: string;
-description: string;
-priority: Priority;
-dueDate: string;
-completed: boolean;
+  id: string;
+  title: string;
+  description: string | null;
+  priority: Priority;
+  dueDate: string | null;
+  done: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 const topBar: React.CSSProperties = {
@@ -151,37 +153,70 @@ const priorityBadge = (priority: Priority): React.CSSProperties => ({
   fontWeight: 700,
   textTransform: "capitalize",
   background:
-    priority === "urgent"
+    priority === "URGENT"
       ? "#ffe1e1"
-      : priority === "medium"
+      : priority === "MEDIUM"
       ? "#fff1c7"
       : "#dff7e8",
   color:
-    priority === "urgent"
+    priority === "URGENT"
       ? "#c92a2a"
-      : priority === "medium"
+      : priority === "MEDIUM"
       ? "#9a6700"
       : "#1f7a43",
 });
 
 export default function Home() {
-    const [tasks, setTasks] = useState<Task[]>([
-      {
-        id: 1,
-        title: "Complete homework",
-        description: "",
-        priority: "medium",
-        dueDate: "2023-10-01",
-        completed: false,
-      },
-    ]);
-    
+    const [tasks, setTasks] = useState<Task[]>([]);
     const [showModal, setShowModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState("");
 
-    const toggleTaskStatus = (taskId: number) => {
+    useEffect(() => {
+      const fetchTasks = async () => {
+        try {
+          const response = await fetch("/api/tasks", {
+            credentials: "include",
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to load tasks");
+          }
+
+          const data = await response.json();
+          setTasks(data);
+        } catch (error) {
+          setError("Could not load tasks");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchTasks();
+    }, []);
+
+    const toggleTaskStatus = async (taskId: string, currentDone: boolean) => {
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          done: !currentDone,
+        }),
+      });
+
+      if (!response.ok) {
+        alert("Could not update task");
+        return;
+      }
+
+      const updatedTask = await response.json();
+
       setTasks(
         tasks.map((task) =>
-          task.id === taskId ? { ...task, completed: !task.completed } : task
+          task.id === taskId ? updatedTask : task
         )
       );
     };
@@ -216,12 +251,12 @@ export default function Home() {
                 <div key={task.id} style={taskCard}>
                 <div>
                     <p
-                    style={{
+                      style={{
                         ...taskTitle,
-                        textDecoration: task.completed ? "line-through" : "none",
-                    }}
+                        textDecoration: task.done ? "line-through" : "none",
+                      }}
                     >
-                    {task.title}
+                      {task.title}
                     </p>
 
                     {task.description && (
@@ -240,10 +275,10 @@ export default function Home() {
                 </div>
 
                 <button
-                    style={taskActionButton}
-                    onClick={() => toggleTaskStatus(task.id)}
+                  style={taskActionButton}
+                  onClick={() => toggleTaskStatus(task.id, task.done)}
                 >
-                    {task.completed ? "Mark Incomplete" : "Mark Complete"}
+                  {task.done ? "Mark Incomplete" : "Mark Complete"}
                 </button>
                 </div>
             ))}
@@ -256,7 +291,7 @@ export default function Home() {
             {showModal && (
             <CreateTaskModal
                 onClose={() => setShowModal(false)}
-                onCreateTask={(task: Task) => setTasks([task, ...tasks])}
+                onCreateTask={(createdTask) => setTasks([createdTask, ...tasks])}
             />
             )}
         </section>

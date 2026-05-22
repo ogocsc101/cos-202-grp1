@@ -2,6 +2,24 @@
 
 import { useState } from "react";
 
+type Priority = "LOW" | "MEDIUM" | "URGENT" | "";
+
+type Task = {
+  id: string;
+  title: string;
+  description: string | null;
+  priority: Exclude<Priority, "">;
+  dueDate: string | null;
+  done: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+type CreateTaskModalProps = {
+  onClose: () => void;
+  onCreateTask: (task: Task) => void;
+};
+
 const modalOverlay: React.CSSProperties = {
   position: "fixed",
   inset: 0,
@@ -75,22 +93,6 @@ const saveButton: React.CSSProperties = {
   cursor: "pointer",
 };
 
-type Priority = "low" | "medium" | "urgent" | "";
-
-type Task = {
-  id: number;
-  title: string;
-  description: string;
-  priority: Priority;
-  dueDate: string;
-  completed: boolean;
-};
-
-type CreateTaskModalProps = {
-  onClose: () => void;
-  onCreateTask: (task: Task) => void;
-};
-
 export default function CreateTaskModal({
   onClose,
   onCreateTask,
@@ -102,24 +104,36 @@ export default function CreateTaskModal({
     dueDate: "",
   });
 
-  const handleCreateTask = () => {
-    if (!newTask.title.trim()) {
-      alert("Task title is required");
-      return;
-    }
+    const handleCreateTask = async () => {
+      if (!newTask.title.trim()) {
+        alert("Task title is required");
+        return;
+      }
 
-    const task: Task = {
-      id: Date.now(),
-      title: newTask.title,
-      description: newTask.description,
-      priority: newTask.priority,
-      dueDate: newTask.dueDate,
-      completed: false,
+      const response = await fetch("/api/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          title: newTask.title,
+          description: newTask.description || null,
+          priority: newTask.priority || "MEDIUM",
+          dueDate: newTask.dueDate || null,
+        }),
+      });
+
+      if (!response.ok) {
+        alert("Could not create task");
+        return;
+      }
+
+      const createdTask = await response.json();
+
+      onCreateTask(createdTask);
+      onClose();
     };
-
-    onCreateTask(task);
-    onClose();
-  };
 
   return (
     <div style={modalOverlay}>
@@ -154,9 +168,9 @@ export default function CreateTaskModal({
           }
         >
           <option value="">Select priority</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="urgent">Urgent</option>
+          <option value="LOW">Low</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="URGENT">Urgent</option>
         </select>
 
         <label style={fieldLabel}>Due Date</label>
