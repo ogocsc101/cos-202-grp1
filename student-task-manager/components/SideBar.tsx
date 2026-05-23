@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { User } from "lucide-react";
 
 type NavItem = {
   label: string;
@@ -107,13 +110,23 @@ const profileRole: React.CSSProperties = {
   color: "#7a8799",
 };
 
-export default function Sidebar() {
+export default function Sidebar({ studentName = "Student" }) {
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
+  const router = useRouter();
 
   return (
     <aside style={sidebarStyle}>
       <div style={sidebarLogo}>
-        <span style={logoMark}>S</span>
+        <Image
+          src="/sidebar-logo.png"
+          alt="Logo"
+          width={36}
+          height={36}
+          style={{
+            borderRadius: "10px",
+            objectFit: "cover",
+          }}
+        />
         <span>Task Manager</span>
       </div>
 
@@ -141,9 +154,20 @@ export default function Sidebar() {
     </nav>
 
       <div style={sidebarProfile}>
-        <div style={avatar}>N</div>
+        <button
+          style={{
+            ...avatar,
+            border: "none",
+            cursor: "pointer",
+          }}
+          onClick={() => router.push("/dashboard/profile")}
+        >
+          <User size={20} />
+        </button>
         <div style={profileText}>
-          <strong style={profileName}>Scholar</strong>
+          <strong style={profileName}>
+            {studentName}
+          </strong>
           <span style={profileRole}>Student</span>
         </div>
       </div>

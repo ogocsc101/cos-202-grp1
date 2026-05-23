@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import SideBar from "@/components/SideBar";
 import CreateTaskModal from "@/components/CreateTaskModal";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { User, Bell } from "lucide-react";
 
 type Priority = "LOW" | "MEDIUM" | "URGENT" | "";
 
@@ -52,8 +52,9 @@ const iconButton: React.CSSProperties = {
   width: "42px",
   height: "42px",
   borderRadius: "12px",
-  border: "1px solid #e5edf7",
+  border: "1px solid #2f80d7",
   background: "#ffffff",
+  color: "#2f80d7",
   display: "grid",
   placeItems: "center",
   cursor: "pointer",
@@ -258,7 +259,7 @@ export default function Home() {
 
     return (
     <div style={appLayout}>
-        <SideBar />
+        <SideBar studentName={studentName} />
 
         <main style={mainArea}>
         <header style={topBar}>
@@ -269,7 +270,7 @@ export default function Home() {
 
             <div style={topBarActions}>
             <button style={iconButton} aria-label="Notifications">
-                🔔
+              <Bell size={20} />
             </button>
 
             <button
@@ -280,7 +281,7 @@ export default function Home() {
               }}
               onClick={() => router.push("/dashboard/profile")}
             >
-              {studentName?.charAt(0) || "S"}
+              <User size={20} />
             </button>
             </div>
         </header>
