@@ -45,7 +45,7 @@ const pageTitle: React.CSSProperties = {
 const topBarActions: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
-  gap: "12px",
+  gap: "16px",
 };
 
 const iconButton: React.CSSProperties = {
@@ -64,7 +64,7 @@ const iconButton: React.CSSProperties = {
 const topAvatar: React.CSSProperties = {
   width: "42px",
   height: "42px",
-  borderRadius: "50%",
+  borderRadius: "12px",
   background: "#2f80d7",
   color: "#ffffff",
   display: "grid",
