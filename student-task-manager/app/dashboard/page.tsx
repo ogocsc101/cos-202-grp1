@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import SideBar from "@/components/SideBar";
 import CreateTaskModal from "@/components/CreateTaskModal";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type Priority = "LOW" | "MEDIUM" | "URGENT" | "";
 
@@ -78,6 +80,7 @@ const appLayout: React.CSSProperties = {
 const mainArea: React.CSSProperties = {
   flex: 1,
   minHeight: "100vh",
+  position: "relative",
 };
 
 const dashboardContent: React.CSSProperties = {
@@ -85,7 +88,7 @@ const dashboardContent: React.CSSProperties = {
 };
 
 const createTaskButton: React.CSSProperties = {
-  position: "fixed",
+  position: "absolute",
   bottom: "28px",
   left: "50%",
   transform: "translateX(-50%)",
@@ -166,11 +169,34 @@ const priorityBadge = (priority: Priority): React.CSSProperties => ({
       : "#1f7a43",
 });
 
+const emptyState: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  marginTop: "60px",
+  textAlign: "center",
+};
+
+const emptyImage: React.CSSProperties = {
+  width: "320px",
+  maxWidth: "100%",
+};
+
+const emptyText: React.CSSProperties = {
+  marginTop: "20px",
+  fontSize: "18px",
+  color: "#64748b",
+  fontWeight: 500,
+};
+
 export default function Home() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
+    const [studentName, setStudentName] = useState("");
+    const router = useRouter();
 
     useEffect(() => {
       const fetchTasks = async () => {
@@ -185,6 +211,15 @@ export default function Home() {
 
           const data = await response.json();
           setTasks(data);
+
+          const userResponse = await fetch("/api/auth/me", {
+            credentials: "include",
+          });
+
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            setStudentName(userData.name);
+          }
         } catch (error) {
           setError("Could not load tasks");
         } finally {
@@ -229,7 +264,7 @@ export default function Home() {
         <header style={topBar}>
             <div>
             <p style={greeting}>Welcome Aboard</p>
-            <h1 style={pageTitle}> [Student_Name] </h1>
+            <h1 style={pageTitle}> {studentName || "Student"} </h1>
             </div>
 
             <div style={topBarActions}>
@@ -237,7 +272,16 @@ export default function Home() {
                 🔔
             </button>
 
-            <div style={topAvatar}>N</div>
+            <button
+              style={{
+                ...topAvatar,
+                border: "none",
+                cursor: "pointer",
+              }}
+              onClick={() => router.push("/dashboard/profile")}
+            >
+              {studentName?.charAt(0) || "S"}
+            </button>
             </div>
         </header>
 
@@ -246,8 +290,21 @@ export default function Home() {
             Dashboard
             </h1>
 
-            <div style={taskList}>
-            {tasks.map((task) => (
+            {tasks.length === 0 ? (
+              <div style={emptyState}>
+                <img
+                  src="/empty-state.svg"
+                  alt="No tasks"
+                  style={emptyImage}
+                />
+
+                <p style={emptyText}>
+                  No tasks yet. Click the + button to create one.
+                </p>
+              </div>
+            ) : (
+              <div style={taskList}>
+                {tasks.map((task) => (
                 <div key={task.id} style={taskCard}>
                 <div>
                     <p
@@ -283,7 +340,7 @@ export default function Home() {
                 </div>
             ))}
             </div>
-
+          )}
             <button style={createTaskButton} onClick={() => setShowModal(true)}>
             +
             </button>

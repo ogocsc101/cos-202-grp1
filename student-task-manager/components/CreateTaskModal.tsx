@@ -120,18 +120,22 @@ export default function CreateTaskModal({
           title: newTask.title,
           description: newTask.description || null,
           priority: newTask.priority || "MEDIUM",
-          dueDate: newTask.dueDate || null,
+          dueDate: newTask.dueDate
+            ? new Date(newTask.dueDate).toISOString()
+            : null,
         }),
       });
 
+      const data = await response.json();
+      console.log("Create task status:", response.status);
+      console.log("Create task response:", data);
+
       if (!response.ok) {
-        alert("Could not create task");
+        alert(data.error || data.message || "Could not create task");
         return;
       }
 
-      const createdTask = await response.json();
-
-      onCreateTask(createdTask);
+      onCreateTask(data);
       onClose();
     };
 

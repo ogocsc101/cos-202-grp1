@@ -14,27 +14,31 @@ function Signup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const res = await fetch('/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ name, email, password }),
       });
 
       const data = await res.json();
 
+      console.log("Signup status:", res.status);
+      console.log("Signup response:", data);
+
       if (!res.ok) {
-        setError(data.error || 'Something went wrong');
+        setError(data.error || data.message || "Something went wrong");
         return;
       }
 
-      router.push('/dashboard');
-
+      router.push("/dashboard");
     } catch (err) {
-      setError('Something went wrong, please try again');
+      console.error("Signup request failed:", err);
+      setError("Something went wrong, please try again");
     } finally {
       setLoading(false);
     }
