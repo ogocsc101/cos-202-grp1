@@ -24,3 +24,10 @@ body {
   color: var(--foreground);
   font-family: "Poppins", sans-serif;
 }
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #2f80d7 !important;
+  box-shadow: 0 0 0 3px rgba(47, 128, 215, 0.12);
+}
