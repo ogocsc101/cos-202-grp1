@@ -19,3 +19,12 @@ select:focus {
   border-color: #2f80d7 !important;
   box-shadow: 0 0 0 3px rgba(47, 128, 215, 0.12);
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+#active-tasks,
+#completed-tasks {
+  scroll-margin-top: 110px;
+}
