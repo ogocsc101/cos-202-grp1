@@ -191,8 +191,20 @@ function TaskItem({ task, toggleTaskStatus, deleteTask }: TaskItemProps) {
 export default function TodayPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [priorityOrder, setPriorityOrder] = useState<"asc" | "desc">("asc");
+  const priorityRank: Record<Priority, number> = {
+    LOW: 1,
+    MEDIUM: 2,
+    URGENT: 3,
+  };
 
-  const todayTasks = tasks.filter((task) => isToday(task.dueDate));
+  const todayTasks = tasks
+    .filter((task) => isToday(task.dueDate))
+    .sort((a, b) => {
+      const result = priorityRank[a.priority] - priorityRank[b.priority];
+
+      return priorityOrder === "asc" ? result : -result;
+    });
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -268,6 +280,22 @@ export default function TodayPage() {
           <h1 className="text-3xl font-bold mb-10 text-[#2F80D1]">
             Today
           </h1>
+
+          <div className="flex flex-wrap gap-4 mb-10">
+            <select
+              value={priorityOrder}
+              onChange={(e) => setPriorityOrder(e.target.value as "asc" | "desc")}
+              className="
+                px-4 py-3
+                rounded-xl
+                border border-blue-100
+                bg-white
+              "
+            >
+              <option value="asc">Priority: Low to Urgent</option>
+              <option value="desc">Priority: Urgent to Low</option>
+            </select>
+          </div>
 
           {isLoading ? (
             <p>Loading...</p>

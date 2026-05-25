@@ -121,6 +121,27 @@ const emptyText: React.CSSProperties = {
   fontWeight: 500,
 };
 
+const floatingTaskNav: React.CSSProperties = {
+  position: "fixed",
+  right: "28px",
+  top: "120px",
+  zIndex: 25,
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px",
+};
+
+const floatingTaskNavButton: React.CSSProperties = {
+  padding: "10px 14px",
+  borderRadius: "999px",
+  border: "1px solid #bfdbfe",
+  background: "#ffffff",
+  color: "#2563eb",
+  fontWeight: 700,
+  cursor: "pointer",
+  boxShadow: "0 8px 20px rgba(15, 23, 42, 0.08)",
+};
+
 type TaskItemProps = {
   task: Task;
   toggleTaskStatus: (id: string, done: boolean) => void;
@@ -396,6 +417,30 @@ export default function Home() {
 
             </div>
 
+            <div style={floatingTaskNav}>
+              <button
+                style={floatingTaskNavButton}
+                onClick={() =>
+                  document
+                    .getElementById("active-tasks")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
+              >
+                Active
+              </button>
+
+              <button
+                style={floatingTaskNavButton}
+                onClick={() =>
+                  document
+                    .getElementById("completed-tasks")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
+              >
+                Completed
+              </button>
+            </div>
+
             {isLoading ? (
               <p>Loading...</p>
             ) : activeTasks.length === 0 && completedTasks.length === 0 ? (
@@ -414,7 +459,7 @@ export default function Home() {
               <div className="space-y-10">
 
                 {/* ACTIVE TASKS */}
-                <div>
+                <div id="active-tasks">
                   <div className="flex items-center gap-3 mb-5">
                     <h2 className="text-xl font-bold text-slate-700">
                       Active Tasks
@@ -440,7 +485,7 @@ export default function Home() {
                 </div>
 
                 {/* COMPLETED TASKS */}
-                <div>
+                <div id="completed-tasks">
                   <div className="flex items-center gap-3 mb-5">
                     <h2 className="text-lg font-semibold text-slate-700">
                       Completed
@@ -512,8 +557,16 @@ export default function Home() {
               setShowModal(false);
               setEditingTask(null);
             }}
-            onCreateTask={(task) => {
-              setTasks((prev) => [task, ...prev]);
+            onSaveTask={(task) => {
+              if (editingTask) {
+                setTasks((prev => 
+                  prev.map((existingTask) =>
+                    existingTask.id === task.id ? task : existingTask)
+                  )
+                );
+              } else {
+                setTasks((prev) => [task, ...prev]);
+              }
             }}
           />
         )}

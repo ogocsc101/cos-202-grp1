@@ -17,7 +17,7 @@ type Task = {
 
 type CreateTaskModalProps = {
   onClose: () => void;
-  onCreateTask: (task: Task) => void;
+  onSaveTask: (task: Task) => void;
   task?: Task | null;
 };
 
@@ -96,7 +96,7 @@ const saveButton: React.CSSProperties = {
 
 export default function CreateTaskModal({
   onClose,
-  onCreateTask,
+  onSaveTask,
   task,
 }: CreateTaskModalProps) {
   const isEditMode = !!task;
@@ -155,7 +155,7 @@ export default function CreateTaskModal({
         return;
       }
 
-      onCreateTask(data);
+      onSaveTask(data);
       onClose();
     };
 
