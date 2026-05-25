@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import SideBar from "@/components/SideBar";
 import CreateTaskModal from "@/components/CreateTaskModal";
-import { useRouter } from "next/navigation";
 import { Check, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
