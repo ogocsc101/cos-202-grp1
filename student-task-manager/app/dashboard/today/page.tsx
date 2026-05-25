@@ -281,7 +281,11 @@ export default function TodayPage() {
             Today
           </h1>
 
-          <div className="flex flex-wrap gap-4 mb-10">
+          <div className="flex flex-wrap items-center gap-3 mb-10">
+            <label className="text-sm font-semibold text-slate-600">
+              Priority:
+            </label>
+
             <select
               value={priorityOrder}
               onChange={(e) => setPriorityOrder(e.target.value as "asc" | "desc")}
@@ -290,10 +294,12 @@ export default function TodayPage() {
                 rounded-xl
                 border border-blue-100
                 bg-white
+                text-slate-700
+                outline-none
               "
             >
-              <option value="asc">Priority: Low to Urgent</option>
-              <option value="desc">Priority: Urgent to Low</option>
+              <option value="asc">Low to Urgent</option>
+              <option value="desc">Urgent to Low</option>
             </select>
           </div>
 
