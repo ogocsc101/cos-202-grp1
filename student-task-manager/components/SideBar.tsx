@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { User } from "lucide-react";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
@@ -16,12 +15,14 @@ const navItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Today", href: "/dashboard/today" },
   { label: "Courses", href: "/dashboard/courses" },
-  { label: "Completed", href: "/dashboard/completed" },
 ];
 
 const sidebarStyle: React.CSSProperties = {
   width: "240px",
-  minHeight: "100vh",
+  height: "100vh",
+  position: "fixed",
+  top: 0,
+  left: 0,
   background: "#f8fbff",
   borderRight: "1px solid #e5edf7",
   padding: "24px 16px",
@@ -75,44 +76,7 @@ const navItemHover: React.CSSProperties = {
   color: "#2f80d7",
 };
 
-const sidebarProfile: React.CSSProperties = {
-    marginTop: "auto",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    padding: "12px",
-    borderRadius: "14px",
-    background: "white",
-    border: "1px solid #e5edf7",
-}
-
-const avatar: React.CSSProperties = {
-    width: "38px",
-    height: "38px",
-    borderRadius: "50%",
-    background: "#2f80d7",
-    color: "white",
-    display: "grid",
-    placeItems: "center",
-    fontWeight: 700,
-}
-
-const profileText: React.CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-};
-
-const profileName: React.CSSProperties = {
-  fontWeight: 700,
-  color: "#1f2a44",
-};
-
-const profileRole: React.CSSProperties = {
-  fontSize: "13px",
-  color: "#7a8799",
-};
-
-export default function Sidebar({ studentName = "Student" }) {
+export default function Sidebar() {
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -180,25 +144,6 @@ export default function Sidebar({ studentName = "Student" }) {
               );
             })}
       </nav>
-
-      <div style={sidebarProfile}>
-        <button
-          style={{
-            ...avatar,
-            border: "none",
-            cursor: "pointer",
-          }}
-          onClick={() => router.push("/dashboard/profile")}
-        >
-          <User size={20} />
-        </button>
-        <div style={profileText}>
-          <strong style={profileName}>
-            {studentName}
-          </strong>
-          <span style={profileRole}>Student</span>
-        </div>
-      </div>
     </aside>
   );
 }

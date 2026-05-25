@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import SideBar from "@/components/SideBar";
 import CreateTaskModal from "@/components/CreateTaskModal";
 import { useRouter } from "next/navigation";
-import { User, Bell, Check, Trash2 } from "lucide-react";
+import { Check, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 type Priority = "LOW" | "MEDIUM" | "URGENT";
@@ -37,25 +37,6 @@ const greeting: React.CSSProperties = {
   fontWeight: 600,
 };
 
-const topBarActions: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: "16px",
-};
-
-const iconButton: React.CSSProperties = {
-  width: "42px",
-  height: "42px",
-  borderRadius: "12px",
-  border: "1px solid #2f80d7",
-  background: "#ffffff",
-  color: "#2f80d7",
-  display: "grid",
-  placeItems: "center",
-  cursor: "pointer",
-  transition: "all 0.25s ease",
-};
-
 const appLayout: React.CSSProperties = {
   minHeight: "100vh",
   display: "flex",
@@ -66,10 +47,13 @@ const mainArea: React.CSSProperties = {
   flex: 1,
   minHeight: "100vh",
   position: "relative",
+  marginLeft: "240px",
 };
 
 const dashboardContent: React.CSSProperties = {
   padding: "32px",
+  minHeight: "calc(100vh - 88px)",
+  background: "#f8fbff",
 };
 
 const createTaskButton: React.CSSProperties = {
@@ -162,14 +146,13 @@ const TaskItem = ({ task, toggleTaskStatus, formatDate, deleteTask, onEdit, }: T
     >
       <div
         className={`
-          flex items-center justify-between
+          flex items-center justify-between gap-4
           rounded-xl p-4
           transition-all duration-300
           ${task.done ? "bg-blue-100" : "bg-[#eaf4ff]"}
         `}
       >
-        <div className="flex items-start gap-4">
-
+        <div className="flex items-start gap-4 min-w-0">
           {/* CHECK BUTTON */}
           <button
             onClick={() => toggleTaskStatus(task.id, task.done)}
@@ -177,6 +160,7 @@ const TaskItem = ({ task, toggleTaskStatus, formatDate, deleteTask, onEdit, }: T
               w-7 h-7 rounded-full border-2
               flex items-center justify-center
               transition-all duration-300 mt-1
+              shrink-0
               ${
                 task.done
                   ? "bg-[#2f80d7] border-[#2f80d7]"
@@ -188,7 +172,7 @@ const TaskItem = ({ task, toggleTaskStatus, formatDate, deleteTask, onEdit, }: T
           </button>
 
           {/* TASK CONTENT */}
-          <div>
+          <div className="min-w-0">
             <p
               className={`
                 text-[16px]
@@ -220,26 +204,23 @@ const TaskItem = ({ task, toggleTaskStatus, formatDate, deleteTask, onEdit, }: T
                 {task.priority}
               </span>
             )}
-
-            <div className="flex gap-3 mt-4">
-
-              <button
-                onClick={() => onEdit(task)}
-                className="text-sm font-semibold text-blue-600 hover:text-blue-800"
-              >
-                Edit
-              </button>
-
-              <button
-                onClick={() => deleteTask(task.id)}
-                className="p-2 rounded-md text-red-500 hover:bg-red-50 hover:text-red-700 transition"
-              >
-                <Trash2 size={18} />
-              </button>
-
-            </div>
           </div>
+        </div>
 
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={() => onEdit(task)}
+            className="px-3 py-1.5 rounded-lg text-sm font-semibold text-blue-600 hover:bg-blue-50 hover:text-blue-800 transition"
+          >
+            Edit
+          </button>
+
+          <button
+            onClick={() => deleteTask(task.id)}
+            className="p-2 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-700 transition"
+          >
+            <Trash2 size={18} />
+          </button>
         </div>
       </div>
     </motion.div>
@@ -249,7 +230,6 @@ const TaskItem = ({ task, toggleTaskStatus, formatDate, deleteTask, onEdit, }: T
 export default function Home() {
     const [studentName, setStudentName] = useState("");
     const [editingTask, setEditingTask] = useState<Task | null>(null);
-    const router = useRouter();
     const [tasks, setTasks] = useState<Task[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -355,26 +335,12 @@ export default function Home() {
 
     return (
     <div style={appLayout}>
-        <SideBar studentName={studentName} />
+        <SideBar />
 
         <main style={mainArea}>
         <header style={topBar}>
             <div>
             <p style={greeting}>Welcome Aboard</p>
-            </div>
-
-            <div style={topBarActions}>
-            <button style={iconButton} className="hover:bg-[#2f80d7] hover:text-white">
-              <Bell size={20} />
-            </button>
-
-            <button
-              style={iconButton}
-              className="hover:bg-blue-600 hover:text-white"
-              onClick={() => router.push("/dashboard/profile")}
-            >
-              <User size={20} />
-            </button>
             </div>
         </header>
 
