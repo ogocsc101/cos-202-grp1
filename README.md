@@ -1,10 +1,9 @@
-# Student Task Manager
+# 🎓Student Task Manager
 
-A fullstack task management app built with Next.js, PostgreSQL, and Prisma.
+A fullstack,lightweight,intuitive task management app designed to help students organize assignments, track deadlines and boost daily productivity,built with Next.js, PostgreSQL, and Prisma.
 
 ---
-
-## Tech Stack
+## 🛠️ Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -16,28 +15,30 @@ A fullstack task management app built with Next.js, PostgreSQL, and Prisma.
 
 ---
 
-## Getting Started
+## 🚀Getting Started
+Get a local copy up and running by following these simple steps.
 
-### Prerequisites
+---
+### 📋 Prerequisites
 
 Make sure you have these installed:
 - [Node.js](https://nodejs.org) (LTS version)
 - [PostgreSQL](https://www.postgresql.org/download/) running locally
 
+## 💻Installation & Setup
 ### 1. Clone the repo
 
 ```bash
 git clone https://github.com/kusoroadeolu/cos-202-grp1
-cd student-task-manager
 ```
 
-### 2. Install dependencies
+### 2. Navigate to the project directory
+    cd student-task-manager
+    
+### 3. Install dependencies
+    npm install
 
-```bash
-npm install
-```
-
-### 3. Set up environment variables
+### 4. Set up environment variables
 
 Copy the example env file:
 
@@ -53,9 +54,9 @@ NEXTAUTH_SECRET="your-random-secret"
 NEXTAUTH_URL="http://localhost:3000"
 ```
 
-> Generate a secret with: `openssl rand -base64 32`
+>💡 Tip: You can easily generate a secure secret key by running: `openssl rand -base64 32`
 
-### 4. Set up the database
+### 5. Set up the database
 
 ```bash
 npx prisma migrate dev --name init
@@ -63,7 +64,7 @@ npx prisma migrate dev --name init
 
 This creates the `taskmanager` database and applies the schema automatically.
 
-### 5. Run the dev server
+### 6. Run the dev server
 
 ```bash
 npm run dev
@@ -73,7 +74,7 @@ Open [http://localhost:3000](http://localhost:3000) — you're good to go.
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
 ```
 student-task-manager/
@@ -85,7 +86,7 @@ student-task-manager/
 │       ├── projects/route.ts           # Project endpoints
 │       └── auth/[...nextauth]/route.ts # Auth endpoints
 │
-├── components/                         # FRONTEND Team works here
+├── components/                         # 🎨FRONTEND Team works here
 │   ├── TaskCard.tsx
 │   └── Sidebar.tsx
 │
@@ -100,9 +101,9 @@ student-task-manager/
 
 ---
 
-## Team Guidelines
+## 🤝 Team Guidelines
 
-### Backend Team
+### ⚙️ Backend Team (Akanbi Ibukunoluwa and Nneji Kamsiyochukwu)
 - Work inside `app/api/`
 - Each file is a route — `route.ts` exports `GET`, `POST`, `PUT`, `DELETE` functions
 - Use the shared Prisma client from `lib/db.ts` — don't create your own instance
@@ -124,14 +125,14 @@ export async function POST(req: Request) {
 }
 ```
 
-### Frontend Team
+### 🎨 Frontend Team ( Awodeyi Bernice and Nweje Chukwudumebi)
 - Work inside `components/` and `app/` pages
 - Use Tailwind CSS for styling — no separate CSS files needed
 - Fetch data from the API routes the backend team creates (e.g. `fetch('/api/tasks')`)
 - Keep components small and focused — one component, one responsibility
 - Also use Figma to sketch out frontend mocks quickly
 
-###  QA/Documentation Team
+###  QA/Documentation Team (Olamiju Oluwasemilore and Ezeukwu Jeffery)
 - Work inside `__tests__/`
 - We use **Jest** + **React Testing Library**
 - Run tests with: `npm test`
@@ -139,7 +140,7 @@ export async function POST(req: Request) {
 
 ---
 
-## Database Schema
+## 🗄️ Database Schema
 
 Defined in `prisma/schema.prisma`. Current models:
 
@@ -168,7 +169,7 @@ Never commit your `.env` file. Use `.env.example` to share variable names.
 
 ---
 
-## Useful Commands
+## 🔧 Useful Commands
 When running these commands ensure you are in the student-task-manager folder
 | Command | What it does |
 |---|---|
@@ -180,3 +181,18 @@ When running these commands ensure you are in the student-task-manager folder
 | `npm run test:watch` | Run tests in watch mode |
 ---
 
+## 📈Contribution Workflow
+
+Contributions make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Create a personal copy of the repository
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.

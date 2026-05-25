@@ -1,7 +1,11 @@
+"use client"
+
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { User } from "lucide-react";
+import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 type NavItem = {
   label: string;
@@ -9,12 +13,10 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", href: "#" },
-  { label: "Today", href: "#" },
-  { label: "Calendar", href: "#" },
-  { label: "Courses", href: "#" },
-  { label: "Completed", href: "#" },
-  { label: "Settings", href: "#" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Today", href: "/dashboard/today" },
+  { label: "Courses", href: "/dashboard/courses" },
+  { label: "Completed", href: "/dashboard/completed" },
 ];
 
 const sidebarStyle: React.CSSProperties = {
@@ -40,7 +42,7 @@ const logoMark: React.CSSProperties = {
     width: "36px",
     height: "36px",
     borderRadius: "10px",
-    background: "2f80d7",
+    background: "#2f80d7",
     color: "#1f2a44",
     display: "grid",
     placeItems: "center",
@@ -113,6 +115,7 @@ const profileRole: React.CSSProperties = {
 export default function Sidebar({ studentName = "Student" }) {
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <aside style={sidebarStyle}>
@@ -131,27 +134,52 @@ export default function Sidebar({ studentName = "Student" }) {
       </div>
 
     <nav style={sidebarNav}>
-        {navItems.map((item) => {
-            const isActive = item.label === "Dashboard";
-            const isHovered = hoveredNav === item.label;
+      {navItems.map((item) => {
+        const isActive = pathname === item.href;
 
             return (
-                <a
-                    key={item.label}
-                    href={item.href}
-                    style={{
-                        ...navItemBase,
-                        ...(isActive ? navItemActive : {}),
-                        ...(isHovered && !isActive ? navItemHover : {}),
-                    }}
-                    onMouseEnter={() => setHoveredNav(item.label)}
-                    onMouseLeave={() => setHoveredNav(null)}
+                <div
+                  key={item.label}
+                  style={{
+                    position: "relative",
+                  }}
                 >
+                  {isActive && (
+                    <motion.div
+                      layoutId="active-pill"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background: "#dceeff",
+                        borderRadius: "12px",
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+
+                  <button
+                    onClick={() => router.push(item.href)}
+                    style={{
+                      ...navItemBase,
+                      position: "relative",
+                      background: "transparent",
+                      border: "none",
+                      width: "100%",
+                      textAlign: "left",
+                      color: isActive ? "#1f6fc9" : "#536179",
+                      fontWeight: isActive ? 700 : 500,
+                    }}
+                  >
                     {item.label}
-                </a>
-            );
-        })}
-    </nav>
+                  </button>
+                </div>
+              );
+            })}
+      </nav>
 
       <div style={sidebarProfile}>
         <button

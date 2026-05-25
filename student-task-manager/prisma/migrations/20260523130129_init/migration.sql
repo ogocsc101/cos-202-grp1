@@ -1,8 +1,12 @@
+-- CreateEnum
+CREATE TYPE "Priority" AS ENUM ('LOW', 'MEDIUM', 'URGENT');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT,
+    "password" TEXT NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -11,9 +15,13 @@ CREATE TABLE "User" (
 CREATE TABLE "Task" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
+    "description" TEXT,
     "done" BOOLEAN NOT NULL DEFAULT false,
+    "dueDate" TIMESTAMP(3),
+    "priority" "Priority" NOT NULL DEFAULT 'MEDIUM',
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
 );
