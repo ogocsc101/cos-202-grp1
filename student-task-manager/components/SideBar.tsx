@@ -14,7 +14,6 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Today", href: "/dashboard/today" },
-  { label: "Courses", href: "/dashboard/courses" },
 ];
 
 const sidebarStyle: React.CSSProperties = {
