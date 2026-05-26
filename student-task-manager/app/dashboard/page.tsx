@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import SideBar from "@/components/SideBar";
 import CreateTaskModal from "@/components/CreateTaskModal";
 import { Check, Trash2 } from "lucide-react";
@@ -281,51 +281,38 @@ export default function Home() {
       setTasks(prev => prev.filter(task => task.id !== taskId));
     };
 
-    useEffect(() => {
-      const fetchTasks = async () => {
-        try {
-          const response = await fetch(
-            `/api/tasks?search=${search}&sortBy=${sortBy}&order=${order}`,
-            {
-              credentials: "include",
-            }
-          );
+  // Fetch user once on mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userResponse = await fetch("/api/auth/me", { credentials: "include" });
+      if (!userResponse.ok) return;
+      const userData = await userResponse.json();
+      setStudentName(userData?.name || userData?.user?.name || "");
+    };
+    fetchUser();
+  }, []);
 
-          if (!response.ok) {
-            throw new Error("Failed to load tasks");
-          }
+    const fetchTasks = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `/api/tasks?search=${search}&sortBy=${sortBy}&order=${order}`,
+        { credentials: "include" }
+      );
+      if (!response.ok) throw new Error("Failed to load tasks");
+      const data = await response.json();
+      setTasks(data);
+    } catch (error) {
+      setError("Could not load tasks");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [search, sortBy, order]);
 
-          const data = await response.json();
-          setTasks(data);
-
-          const userResponse = await fetch("/api/auth/me", {
-            credentials: "include",
-          });
-
-          if (!userResponse.ok) {
-            console.log("Failed to fetch user");
-            return;
-          }
-          
-          const userData = await userResponse.json();
-          console.log("USER DATA:", userData);
-
-          setStudentName(
-            userData?.name ||
-            userData?.user?.name ||
-            ""
-          );
-
-        } catch (error) {
-          setError("Could not load tasks");
-        }
-        finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchTasks();
-    }, [search, sortBy, order]);
+  // Fetch tasks with debounce
+  useEffect(() => {
+    const timer = setTimeout(fetchTasks, 300);
+    return () => clearTimeout(timer);
+  }, [fetchTasks]);
 
     const toggleTaskStatus = async (taskId: string, currentDone: boolean) => {
       const response = await fetch(`/api/tasks/${taskId}`, {
@@ -352,6 +339,12 @@ export default function Home() {
         )
       );
     };
+
+    // useEffect just calls it
+    useEffect(() => {
+      const timer = setTimeout(fetchTasks, 300);
+      return () => clearTimeout(timer);
+    }, [fetchTasks]);
 
     return (
     <div style={appLayout}>
@@ -557,17 +550,7 @@ export default function Home() {
               setShowModal(false);
               setEditingTask(null);
             }}
-            onSaveTask={(task) => {
-              if (editingTask) {
-                setTasks((prev => 
-                  prev.map((existingTask) =>
-                    existingTask.id === task.id ? task : existingTask)
-                  )
-                );
-              } else {
-                setTasks((prev) => [task, ...prev]);
-              }
-            }}
+            onSaveTask={fetchTasks}
           />
         )}
       </main>
