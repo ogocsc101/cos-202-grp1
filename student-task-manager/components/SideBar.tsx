@@ -1,7 +1,10 @@
+"use client"
+
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { User } from "lucide-react";
+import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 type NavItem = {
   label: string;
@@ -9,17 +12,17 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", href: "#" },
-  { label: "Today", href: "#" },
-  { label: "Calendar", href: "#" },
-  { label: "Courses", href: "#" },
-  { label: "Completed", href: "#" },
-  { label: "Settings", href: "#" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Today", href: "/dashboard/today" },
+  { label: "Courses", href: "/dashboard/courses" },
 ];
 
 const sidebarStyle: React.CSSProperties = {
   width: "240px",
-  minHeight: "100vh",
+  height: "100vh",
+  position: "fixed",
+  top: 0,
+  left: 0,
   background: "#f8fbff",
   borderRight: "1px solid #e5edf7",
   padding: "24px 16px",
@@ -40,7 +43,7 @@ const logoMark: React.CSSProperties = {
     width: "36px",
     height: "36px",
     borderRadius: "10px",
-    background: "2f80d7",
+    background: "#2f80d7",
     color: "#1f2a44",
     display: "grid",
     placeItems: "center",
@@ -73,46 +76,10 @@ const navItemHover: React.CSSProperties = {
   color: "#2f80d7",
 };
 
-const sidebarProfile: React.CSSProperties = {
-    marginTop: "auto",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    padding: "12px",
-    borderRadius: "14px",
-    background: "white",
-    border: "1px solid #e5edf7",
-}
-
-const avatar: React.CSSProperties = {
-    width: "38px",
-    height: "38px",
-    borderRadius: "50%",
-    background: "#2f80d7",
-    color: "white",
-    display: "grid",
-    placeItems: "center",
-    fontWeight: 700,
-}
-
-const profileText: React.CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-};
-
-const profileName: React.CSSProperties = {
-  fontWeight: 700,
-  color: "#1f2a44",
-};
-
-const profileRole: React.CSSProperties = {
-  fontSize: "13px",
-  color: "#7a8799",
-};
-
-export default function Sidebar({ studentName = "Student" }) {
+export default function Sidebar() {
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <aside style={sidebarStyle}>
@@ -131,46 +98,52 @@ export default function Sidebar({ studentName = "Student" }) {
       </div>
 
     <nav style={sidebarNav}>
-        {navItems.map((item) => {
-            const isActive = item.label === "Dashboard";
-            const isHovered = hoveredNav === item.label;
+      {navItems.map((item) => {
+        const isActive = pathname === item.href;
 
             return (
-                <a
-                    key={item.label}
-                    href={item.href}
-                    style={{
-                        ...navItemBase,
-                        ...(isActive ? navItemActive : {}),
-                        ...(isHovered && !isActive ? navItemHover : {}),
-                    }}
-                    onMouseEnter={() => setHoveredNav(item.label)}
-                    onMouseLeave={() => setHoveredNav(null)}
+                <div
+                  key={item.label}
+                  style={{
+                    position: "relative",
+                  }}
                 >
-                    {item.label}
-                </a>
-            );
-        })}
-    </nav>
+                  {isActive && (
+                    <motion.div
+                      layoutId="active-pill"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background: "#dceeff",
+                        borderRadius: "12px",
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
+                    />
+                  )}
 
-      <div style={sidebarProfile}>
-        <button
-          style={{
-            ...avatar,
-            border: "none",
-            cursor: "pointer",
-          }}
-          onClick={() => router.push("/dashboard/profile")}
-        >
-          <User size={20} />
-        </button>
-        <div style={profileText}>
-          <strong style={profileName}>
-            {studentName}
-          </strong>
-          <span style={profileRole}>Student</span>
-        </div>
-      </div>
+                  <button
+                    onClick={() => router.push(item.href)}
+                    style={{
+                      ...navItemBase,
+                      position: "relative",
+                      background: "transparent",
+                      border: "none",
+                      width: "100%",
+                      textAlign: "left",
+                      color: isActive ? "#1f6fc9" : "#536179",
+                      fontWeight: isActive ? 700 : 500,
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                </div>
+              );
+            })}
+      </nav>
     </aside>
   );
 }

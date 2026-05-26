@@ -1,22 +1,10 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #f5f8fc;
   --foreground: #000000;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: #f5f8fc;
-    --foreground: #000000;
-  }
 }
 
 body {
@@ -30,4 +18,13 @@ textarea:focus,
 select:focus {
   border-color: #2f80d7 !important;
   box-shadow: 0 0 0 3px rgba(47, 128, 215, 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+#active-tasks,
+#completed-tasks {
+  scroll-margin-top: 110px;
 }

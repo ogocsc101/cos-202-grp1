@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-type Priority = "LOW" | "MEDIUM" | "URGENT" | "";
+type Priority = "LOW" | "MEDIUM" | "URGENT";
 
 type Task = {
   id: string;
@@ -17,7 +17,8 @@ type Task = {
 
 type CreateTaskModalProps = {
   onClose: () => void;
-  onCreateTask: (task: Task) => void;
+  onSaveTask: (task: Task) => void;
+  task?: Task | null;
 };
 
 const modalOverlay: React.CSSProperties = {
@@ -27,7 +28,7 @@ const modalOverlay: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  zIndex: 20,
+  zIndex: 100,
 };
 
 const modalCard: React.CSSProperties = {
@@ -95,54 +96,84 @@ const saveButton: React.CSSProperties = {
 
 export default function CreateTaskModal({
   onClose,
-  onCreateTask,
+  onSaveTask,
+  task,
 }: CreateTaskModalProps) {
-  const [newTask, setNewTask] = useState({
+  const isEditMode = !!task;
+
+  const [newTask, setNewTask] = useState<{
+    title: string;
+    description:string;
+    priority: Priority;
+    dueDate: string;
+  }>({
     title: "",
     description: "",
-    priority: "" as Priority,
+    priority: "MEDIUM",
     dueDate: "",
   });
 
-    const handleCreateTask = async () => {
+    const handleSubmit = async () => {
       if (!newTask.title.trim()) {
         alert("Task title is required");
         return;
       }
 
-      const response = await fetch("/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          title: newTask.title,
-          description: newTask.description || null,
-          priority: newTask.priority || "MEDIUM",
-          dueDate: newTask.dueDate
-            ? new Date(newTask.dueDate).toISOString()
-            : null,
-        }),
-      });
+      const payload = {
+        title: newTask.title,
+        description: newTask.description || null,
+        priority: newTask.priority,
+        dueDate: newTask.dueDate
+          ? new Date(newTask.dueDate).toISOString()
+          : null,
+      };
+
+      let response;
+
+      if (isEditMode && task) {
+        // ✏️ EDIT MODE
+        response = await fetch(`/api/tasks/${task.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        });
+      } else {
+        // ➕ CREATE MODE
+        response = await fetch("/api/tasks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        });
+      }
 
       const data = await response.json();
-      console.log("Create task status:", response.status);
-      console.log("Create task response:", data);
 
       if (!response.ok) {
-        alert(data.error || data.message || "Could not create task");
+        alert(data.error || "Something went wrong");
         return;
       }
 
-      onCreateTask(data);
+      onSaveTask(data);
       onClose();
     };
+
+    useEffect(() => {
+      if (task) {
+        setNewTask({
+          title: task.title,
+          description: task.description || "",
+          priority: task.priority,
+          dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
+        });
+      }
+    }, [task]);
 
   return (
     <div style={modalOverlay}>
       <div style={modalCard}>
-        <h2 style={modalTitle}>Create New Task</h2>
+        <h2>{isEditMode ? "Edit Task" : "Create New Task"}</h2>
 
         <label style={fieldLabel}>Title *</label>
         <input
@@ -171,7 +202,6 @@ export default function CreateTaskModal({
             setNewTask({ ...newTask, priority: e.target.value as Priority })
           }
         >
-          <option value="">Select priority</option>
           <option value="LOW">Low</option>
           <option value="MEDIUM">Medium</option>
           <option value="URGENT">Urgent</option>
@@ -190,8 +220,8 @@ export default function CreateTaskModal({
             Cancel
           </button>
 
-          <button style={saveButton} onClick={handleCreateTask}>
-            Create Task
+          <button style={saveButton} onClick={handleSubmit}>
+            {isEditMode ? "Update Task" : "Create Task"}
           </button>
         </div>
       </div>
