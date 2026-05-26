@@ -273,12 +273,12 @@ export default function TodayPage() {
 
       <main style={mainArea}>
         <header style={topBar}>
-          <p style={greeting}>Tasks Due Today</p>
+          <p style={greeting}>Today's Focus</p>
         </header>
 
         <section style={content}>
           <h1 className="text-3xl font-bold mb-10 text-[#2F80D1]">
-            Today
+            What's Due Today
           </h1>
 
           <div className="flex flex-wrap items-center gap-3 mb-10">
