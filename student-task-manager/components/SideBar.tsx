@@ -84,7 +84,7 @@ export default function Sidebar() {
     <aside style={sidebarStyle}>
       <div style={sidebarLogo}>
         <Image
-          src="/sidebar-logo.png"
+          src="/sidebar-logo.ico"
           alt="Logo"
           width={36}
           height={36}
