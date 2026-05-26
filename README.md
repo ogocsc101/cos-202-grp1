@@ -179,6 +179,17 @@ When running these commands ensure you are in the student-task-manager folder
 | `npx prisma migrate dev` | Apply schema changes |
 | `npx prisma generate` | Regenerate Prisma client after schema edits |
 | `npm run test:watch` | Run tests in watch mode |
+
+---
+
+## ⚠️ Known Issues
+
+The following issues are currently known and may be addressed in future updates:
+
+- Password reset and account recovery functionality are not yet implemented.
+- Mobile responsiveness is still being optimized for smaller screen sizes.
+- Email or push notification reminders for upcoming deadlines are not yet available.
+
 ---
 
 ## 📈Contribution Workflow
